@@ -327,6 +327,16 @@ export class CrossyGameMap extends GameMap {
         let clearPositions: number[] = [];
         if (previousRow && previousRow.type === "grass") {
           clearPositions = this.getClearPositionsFromGrass(previousRow.entity);
+        } else if (previousRow && previousRow.type === "water") {
+          const prevPads = previousRow.entity.getLilyPadPositions();
+          // Expand by ±1 to allow a sideways hop before jumping forward
+          const expanded = new Set<number>();
+          for (const p of prevPads) {
+            expanded.add(p - 1);
+            expanded.add(p);
+            expanded.add(p + 1);
+          }
+          clearPositions = Array.from(expanded);
         }
 
         this.water.items[this.water.count].generate(clearPositions);
