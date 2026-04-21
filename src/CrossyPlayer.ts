@@ -206,6 +206,8 @@ export default class CrossyPlayer extends Group {
   }
 
   commitMovementAnimations({ onComplete }) {
+    this.ridingOn = null;
+    this.ridingOnOffset = null;
     const positionChangeAnimation = this.createPositionAnimation({
       onComplete,
     });

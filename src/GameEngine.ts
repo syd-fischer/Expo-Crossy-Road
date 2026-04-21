@@ -192,7 +192,7 @@ export default class Engine {
 
     const { SWIPE_UP, SWIPE_DOWN, SWIPE_LEFT, SWIPE_RIGHT } = swipeDirections;
 
-    this._hero.ridingOn = null;
+    //this._hero.ridingOn = null;
 
     if (!this._hero.initialPosition) {
       this._hero.initialPosition = this._hero.position;
