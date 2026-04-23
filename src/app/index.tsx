@@ -126,25 +126,28 @@ class Game extends Component {
 
   UNSAFE_componentWillMount() {
     this.engine = new Engine();
-    // this.engine.hideShadows = this.hideShadows;
+
     this.engine.onUpdateScore = (position) => {
-      if (this.state.score < position) {
-        this.setState({ score: position });
-      }
+      if (this.state.score < position) this.setState({ score: position });
     };
-    this.engine.onGameInit = () => {
-      this.setState({ score: 0 });
-    };
-    this.engine._isGameStateEnded = () => {
-      return this.state.gameState !== State.Game.playing;
-    };
+    this.engine.onGameInit = () => this.setState({ score: 0 });
+    this.engine._isGameStateEnded = () => this.state.gameState !== State.Game.playing;
     this.engine.onGameReady = () => this.setState({ ready: true });
     this.engine.onGameEnded = () => {
       this.setState({ gameState: State.Game.gameOver });
-      // this.props.navigation.navigate('GameOver')
     };
-    this.engine.setupGame(this.props.character);
-    this.engine.init();
+
+    // Store character so enableAI's onConfig can use it
+    this.engine._currentCharacter = this.props.character;
+
+    // enableAI opens the WS — setupGame/init happen inside onConfig
+    this.engine.enableAI();
+
+    // ← REMOVE these two lines, onConfig handles them now:
+    // this.engine.setupGame(this.props.character);
+    // this.engine.init();
+
+    this.setState({ gameState: State.Game.playing });
   }
 
   newScore = () => {

@@ -118,4 +118,8 @@ export default class Road extends Object3D {
       }
     }
   };
+  updateCollisionsOnly = (player) => {
+    if (!this.active) return;
+    this.cars.map((car) => this.shouldCheckCollision({ player, car }));
+  };
 }
