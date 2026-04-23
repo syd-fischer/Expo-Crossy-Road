@@ -45,6 +45,9 @@ class Game extends Component {
     if (this.engine && nextProps.character !== this.props.character) {
       this.engine._hero.setCharacter(nextProps.character);
     }
+    if (this.engine && this.engine.gameMap && nextProps.learningMode !== this.props.learningMode) {
+      this.engine.gameMap.learningMode = nextProps.learningMode;
+    }
   }
 
   transitionToGamePlayingState = () => {
@@ -53,7 +56,7 @@ class Game extends Component {
       useNativeDriver: true,
       duration: 200,
       onComplete: ({ finished }) => {
-        this.engine.setupGame(this.props.character);
+        this.engine.setupGame(this.props.character, this.props.learningMode);
         this.engine.init();
 
         if (finished) {
@@ -138,18 +141,8 @@ class Game extends Component {
     this.engine.onGameEnded = () => {
       this.setState({ gameState: State.Game.gameOver });
     };
-
-    // Store character so enableAI's onConfig can use it
-    this.engine._currentCharacter = this.props.character;
-
-    // enableAI opens the WS — setupGame/init happen inside onConfig
-    this.engine.enableAI();
-
-    // ← REMOVE these two lines, onConfig handles them now:
-    // this.engine.setupGame(this.props.character);
-    // this.engine.init();
-
-    this.setState({ gameState: State.Game.playing });
+    this.engine.setupGame(this.props.character, this.props.learningMode);
+    this.engine.init();
   }
 
   newScore = () => {
@@ -222,6 +215,8 @@ class Game extends Component {
         <SettingsScreen
           goBack={() => this.setState({ showSettings: false })}
           setCharacter={this.props.setCharacter}
+          learningMode={this.props.learningMode}
+          setLearningMode={this.props.setLearningMode}
         />
       </View>
     );
@@ -317,16 +312,15 @@ const GestureView = ({ onStartGesture, onSwipe, ...props }) => {
 
 function GameScreen(props) {
   const scheme = useColorScheme();
-  const { character, setCharacter } = React.useContext(GameContext);
-  const params = useLocalSearchParams();
-  const seedParam = params.seed;
-  const seed = Array.isArray(seedParam) ? seedParam[0] : seedParam;
+  const { character, setCharacter, learningMode, setLearningMode } = React.useContext(GameContext);
 
   return (
     <Game
       {...props}
       character={character}
       setCharacter={setCharacter}
+      learningMode={learningMode}
+      setLearningMode={setLearningMode}
       isDarkMode={scheme === "dark"}
       seed={seed}
     />

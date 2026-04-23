@@ -203,11 +203,13 @@ export class CrossyGameMap extends GameMap {
   roads = new EntityContainer();
   railRoads = new EntityContainer();
   rowCount = 0;
+  learningMode = false;
 
-  constructor({ heroWidth, onCollide, scene }) {
+  constructor({ heroWidth, onCollide, scene, learningMode = false }) {
     super();
 
     this.heroWidth = heroWidth;
+    this.learningMode = learningMode;
 
     // Assign mesh to corresponding array
     // and add mesh to scene
@@ -281,7 +283,22 @@ export class CrossyGameMap extends GameMap {
 
     const ROW_TYPES = ["grass", "roadtype", "water"];
     if (rowKind == null) {
-      rowKind = ROW_TYPES[Math.floor(Math.random() * ROW_TYPES.length)];
+      if (this.learningMode) {
+        // Learning mode generation logic
+        const waterProb = Math.min(0.3, Math.max(0, (this.rowCount - 20) * 0.01)); // Water starts at row 20, max 30%
+        const roadProb = Math.max(0.3, 0.7 - this.rowCount * 0.005); // Road starts high, decreases to 30%
+        const rand = Math.random();
+
+        if (rand < waterProb) {
+          rowKind = "water";
+        } else if (rand < waterProb + roadProb) {
+          rowKind = "roadtype";
+        } else {
+          rowKind = "grass";
+        }
+      } else {
+        rowKind = ROW_TYPES[Math.floor(Math.random() * ROW_TYPES.length)];
+      }
     }
 
     // Get the previous row info for coordination

@@ -33,7 +33,7 @@ const TitleButton = ({ text, imageStyle, source, onPress }) => (
   </View>
 );
 
-class Settings extends Component {
+class Settings extends Component<any> {
   state = {
     currentIndex: 0,
     characters: Object.keys(Characters).map((val) => Characters[val]),
@@ -98,6 +98,14 @@ class Settings extends Component {
         source: Images.button.language,
         imageStyle: imageStyle,
         onPress: (_) => {},
+      },
+      {
+        text: `Learning Mode:\n${this.props.learningMode ? "ON" : "OFF"}`,
+        source: Images.button.alerts,
+        imageStyle: imageStyle,
+        onPress: (_) => {
+          this.props.setLearningMode(!this.props.learningMode);
+        },
       },
       {
         text: "Restore\nPurchases",
