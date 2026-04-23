@@ -275,6 +275,18 @@ export default class Water extends Object3D {
     return null;
   };
 
+  updateCollisionsOnly = (player) => {
+    if (!this.active) {
+      return;
+    }
+    if (!player.moving && !player.ridingOn) {
+      for (const entity of this.entities) {
+        this.shouldCheckCollision({ player, entity });
+      }
+      this.shouldCheckHazardCollision({ player });
+    }
+  };
+
   shouldCheckCollision = ({ player, entity }) => {
     if (Math.round(player.position.z) === this.position.z && player.isAlive) {
       const { mesh, collisionBox } = entity;
