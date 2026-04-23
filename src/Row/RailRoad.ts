@@ -176,10 +176,4 @@ updateCollisionsOnly = (player) => {
       this.active_light_b.visible = this.active_light_a.visible = false;
     }
   };
-  updateCollisionsOnly = (player) => {
-    if (!this.active) return;
-    if (!player.moving) {
-      this.trainShouldCheckCollision({ player });
-    }
-  };
 }
