@@ -1,4 +1,5 @@
 import { Dimensions } from "react-native";
+import seedrandom from "seedrandom";
 
 import { swipeDirections } from "@/components/GestureView";
 import AudioManager from "./AudioManager";
@@ -24,28 +25,13 @@ const normalizeAngle = (angle) => {
 };
 
 export default class Engine {
-  // ─── AI state ────────────────────────────────────────────────────────────────
-  aiMode = false;
-  gameSpeed = 3.0; // 1 = normal, 2 = 2× faster, 5 = 5× faster
-  multiAI: MultiAIClient | null = null;
-  populationSize = 1;
+  seed: string;
 
-  _currentCollidingHero: CrossyPlayer | null = null;
+  constructor(seed?: string) {
+    this.seed = seed || Math.random().toString();
+    seedrandom(this.seed, { global: true });
+  }
 
-  _heroes: CrossyPlayer[] = [];
-  _heroTicksAlive: number[] = [];
-  _heroScores: number[] = [];
-  _generationEnding = false; // guard: only send generation_over once
-
-  _heroLastScores: number[] = [];
-  _heroStagnationTicks: number[] = [];
-  stagnationTimeoutSeconds = 30;      // fallback default
-  stagnationTimeoutTicks = 30 * 60;  
-
-  // Points to the lead hero for camera / legacy compat
-  _hero: CrossyPlayer;
-
-  // ─── Scale ───────────────────────────────────────────────────────────────────
   updateScale = () => {
   const { width, height, scale } = Dimensions.get("window");
   if (this.camera) {
