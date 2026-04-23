@@ -43,6 +43,9 @@ class Game extends Component {
     if (this.engine && nextProps.character !== this.props.character) {
       this.engine._hero.setCharacter(nextProps.character);
     }
+    if (this.engine && this.engine.gameMap && nextProps.learningMode !== this.props.learningMode) {
+      this.engine.gameMap.learningMode = nextProps.learningMode;
+    }
   }
 
   transitionToGamePlayingState = () => {
@@ -51,7 +54,7 @@ class Game extends Component {
       useNativeDriver: true,
       duration: 200,
       onComplete: ({ finished }) => {
-        this.engine.setupGame(this.props.character);
+        this.engine.setupGame(this.props.character, this.props.learningMode);
         this.engine.init();
 
         if (finished) {
@@ -143,7 +146,7 @@ class Game extends Component {
       this.setState({ gameState: State.Game.gameOver });
       // this.props.navigation.navigate('GameOver')
     };
-    this.engine.setupGame(this.props.character);
+    this.engine.setupGame(this.props.character, this.props.learningMode);
     this.engine.init();
   }
 
@@ -217,6 +220,8 @@ class Game extends Component {
         <SettingsScreen
           goBack={() => this.setState({ showSettings: false })}
           setCharacter={this.props.setCharacter}
+          learningMode={this.props.learningMode}
+          setLearningMode={this.props.setLearningMode}
         />
       </View>
     );
@@ -311,13 +316,15 @@ const GestureView = ({ onStartGesture, onSwipe, ...props }) => {
 
 function GameScreen(props) {
   const scheme = useColorScheme();
-  const { character, setCharacter } = React.useContext(GameContext);
+  const { character, setCharacter, learningMode, setLearningMode } = React.useContext(GameContext);
 
   return (
     <Game
       {...props}
       character={character}
       setCharacter={setCharacter}
+      learningMode={learningMode}
+      setLearningMode={setLearningMode}
       isDarkMode={scheme === "dark"}
     />
   );
