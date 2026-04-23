@@ -29,8 +29,8 @@ class NEATServer:
             for g in self.genomes
         ]
         self.current_index = 0
-        self.current_genome = self.genomes[self.current_index]
-        self.net = neat.nn.FeedForwardNetwork.create(self.current_genome, self.config)
+        self.current_genome = self.genomes[self.current_index] if len(self.genomes) > 0 else None
+        self.net = neat.nn.FeedForwardNetwork.create(self.current_genome, self.config) if self.current_genome else None
 
         import configparser
         raw_config = configparser.ConfigParser()
@@ -42,13 +42,59 @@ class NEATServer:
             raw_config.get('GameSettings', 'move_interval', fallback='30')
         )
 
+        self.dash = None
+        # Handle headless environments safely
+        if "SDL_VIDEODRIVER" not in os.environ:
+            try:
+                import pygame
+                pygame.display.init()
+                pygame.display.quit()
+            except Exception:
+                os.environ["SDL_VIDEODRIVER"] = "dummy"
+                os.environ["SDL_AUDIODRIVER"] = "dummy"
+                print("WARNING: Using dummy SDL video driver.")
+
+    def init_dashboard(self):
+        try:
+            from dashboard_pygame import Dashboard
+            self.dash = Dashboard()
+        except Exception as e:
+            print("Failed to initialize dashboard:", e)
+
+    def update_dashboard(self):
+        if self.dash is None:
+            return
+
+        best_fitness = 0
+        avg_fitness = 0
+        best_genome = getattr(self, 'current_genome', None)
+
+        if hasattr(self, 'stats') and len(self.stats.most_fit_genomes) > 0:
+            best_genome = self.stats.best_genome()
+            best_fitness = best_genome.fitness if getattr(best_genome, 'fitness', None) is not None else 0
+
+            fit_vals = [g.fitness for g in getattr(self, 'genomes', []) if getattr(g, 'fitness', None) is not None]
+            if len(fit_vals) > 0:
+                avg_fitness = sum(fit_vals) / len(fit_vals)
+        elif hasattr(self, 'genomes') and len(self.genomes) > 0:
+            fit_vals = [g.fitness if getattr(g, 'fitness', None) is not None else 0 for g in self.genomes]
+            best_fitness = max(fit_vals) if len(fit_vals) > 0 else 0
+            best_genome = sorted(self.genomes, key=lambda x: x.fitness if getattr(x, 'fitness', None) is not None else -float('inf'))[-1]
+            if len(fit_vals) > 0:
+                avg_fitness = sum(fit_vals) / len(fit_vals)
+
+        self.dash.update(self.population.generation, best_fitness, avg_fitness, best_genome, self.config)
+
     def get_action(self, state: list[float]) -> str:
+        if self.net is None:
+            return 'UP'
         outputs = self.net.activate(state)
         actions = ['UP', 'DOWN', 'LEFT', 'RIGHT']
         return actions[outputs.index(max(outputs))]
 
     def score_current(self, fitness: float):
-        self.current_genome.fitness = fitness
+        if self.current_genome:
+            self.current_genome.fitness = fitness
         print(f"Genome {self.current_index} scored: {fitness:.2f}")
 
     def advance(self) -> bool:
@@ -66,13 +112,20 @@ class NEATServer:
         self.population.run(lambda genomes, config: None, 1)
         self.genomes = list(self.population.population.values())
         self.current_index = 0
-        self.current_genome = self.genomes[self.current_index]
-        self.net = neat.nn.FeedForwardNetwork.create(self.current_genome, self.config)
+        self.current_genome = self.genomes[self.current_index] if len(self.genomes) > 0 else None
+        if self.current_genome:
+            self.net = neat.nn.FeedForwardNetwork.create(self.current_genome, self.config)
+        else:
+            self.net = None
         #self.visualize()
+        if self.dash is None:
+            self.init_dashboard()
+        self.update_dashboard()
 
     def visualize(self):
         try:
-            visualize.draw_net(self.config, self.current_genome, True)
+            if self.current_genome:
+                visualize.draw_net(self.config, self.current_genome, True)
             visualize.plot_stats(self.stats, ylog=False, view=True)
             visualize.plot_species(self.stats, view=True)
         except Exception as e:
@@ -82,6 +135,10 @@ server = NEATServer()
 
 async def handler(websocket):
     print("TS client connected")
+
+    if server.dash is None:
+        server.init_dashboard()
+        server.update_dashboard()
 
     # Use global server instance, not self
     await websocket.send(json.dumps({
@@ -105,9 +162,14 @@ async def handler(websocket):
                 'actions': actions,
             }))
 
+            # Update UI on every frame requested
+            if server.dash:
+                server.update_dashboard()
+
         elif msg['type'] == 'generation_over':
             for i, fitness in enumerate(msg['fitnesses']):
-                server.genomes[i].fitness = fitness
+                if i < len(server.genomes):
+                    server.genomes[i].fitness = fitness
                 print(f"  Genome {i} fitness: {fitness:.2f}")
             server.evolve()
             await websocket.send(json.dumps({
