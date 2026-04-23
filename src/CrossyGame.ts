@@ -120,12 +120,12 @@ export class CrossyCamera extends OrthographicCamera {
     this.lookAt(0, 0, 0);
   }
 
-  updateScale = ({ width, height, scale }) => {
-    this.left = -(width * scale);
-    this.right = width * scale;
-    this.top = height * scale;
+  updateScale = ({ width, height, scale, zoom = 400 }) => {  // ← add zoom param
+    this.left   = -(width * scale);
+    this.right  =  (width * scale);
+    this.top    =  (height * scale);
     this.bottom = -(height * scale);
-    this.zoom = 400;
+    this.zoom   = zoom;  // ← use it here
     this.updateProjectionMatrix();
   };
 }
@@ -248,6 +248,18 @@ export class CrossyGameMap extends GameMap {
     }
     return clearPositions;
   };
+  // Only runs collision checks, not entity movement
+  tickCollisionsOnly(hero) {
+    for (const water of this.water.items) {
+      water.updateCollisionsOnly(hero);
+    }
+    for (const road of this.roads.items) {
+      road.updateCollisionsOnly(hero);
+    }
+    for (const railRoad of this.railRoads.items) {
+      railRoad.updateCollisionsOnly(hero);
+    }
+  }
 
   // Scene generators
   newRow = (rowKind) => {
