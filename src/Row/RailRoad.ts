@@ -70,38 +70,40 @@ export default class RailRoad extends Object3D {
     this.railRoad.add(light);
   };
 
-  update = (dt, player) => {
-    if (!this.active) {
-      return;
-    }
-    this.drive({ dt, player });
-  };
+
 
   drive = ({ dt, player }) => {
-    const { position, hitByTrain, moving } = player;
     const { train } = this;
     const offset = 22 * 5;
 
+    // Movement — only called from update() once per frame
     train.mesh.position.x += train.speed;
 
     if (train.mesh.position.x > offset && train.speed > 0) {
       train.mesh.position.x = -offset;
       this.startRingingLight();
       AudioManager.playAsync(AudioManager.sounds.train.move["0"]);
-      if (train === hitByTrain) {
-        player.hitByTrain = null;
-      }
+      if (train === player.hitByTrain) player.hitByTrain = null;
     } else if (train.mesh.position.x < -offset && train.speed < 0) {
       train.mesh.position.x = offset;
       this.startRingingLight();
       AudioManager.playAsync(AudioManager.sounds.train.move["0"]);
-      if (train === hitByTrain) {
-        player.hitByTrain = null;
-      }
-    } else if (!moving) {
-      this.trainShouldCheckCollision({ player });
+      if (train === player.hitByTrain) player.hitByTrain = null;
     }
+    // NOTE: collision check removed from here — handled by updateCollisionsOnly
   };
+
+  update = (dt, player) => {
+    if (!this.active) return;
+    this.drive({ dt, player }); // moves train only
+  };
+
+updateCollisionsOnly = (player) => {
+  if (!this.active) return;
+  if (!player.moving) {
+    this.trainShouldCheckCollision({ player });
+  }
+};
 
   trainShouldCheckCollision = ({ player }) => {
     const { train } = this;
@@ -172,6 +174,12 @@ export default class RailRoad extends Object3D {
       this.ringCount = 0;
       this.light.visible = true;
       this.active_light_b.visible = this.active_light_a.visible = false;
+    }
+  };
+  updateCollisionsOnly = (player) => {
+    if (!this.active) return;
+    if (!player.moving) {
+      this.trainShouldCheckCollision({ player });
     }
   };
 }
