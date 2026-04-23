@@ -27,4 +27,6 @@ expo-env.d.ts
 # @end expo-cli
 
 /ios
-/android
+/androidpython/__pycache__
+
+python/__pycache__/
