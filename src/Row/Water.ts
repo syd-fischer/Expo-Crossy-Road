@@ -21,10 +21,9 @@ export default class Water extends Object3D {
   };
 
   generate = (clearPositions: number[] = []) => {
-    this.entities.map((val) => {
+    for (const val of this.entities) {
       this.floor.remove(val.mesh);
-      val = null;
-    });
+    }
     this.entities = [];
     this.lilyPadPositions = [];
 
@@ -195,28 +194,13 @@ export default class Water extends Object3D {
     if (!this.active) {
       return;
     }
-    this.entities.map((entity) => this.move({ dt, player, entity }));
-
-    if (!player.moving) {
-      if (!player.ridingOn) {
-        // Try to find a log/pad to ride
-        this.entities.map((entity) =>
-          this.shouldCheckCollision({ dt, player, entity })
-        );
-      }
-      // Hazard check runs regardless of ridingOn —
-      // shouldCheckHazardCollision internally checks !ridingOn anyway
-      this.shouldCheckHazardCollision({ player });
+    for (const entity of this.entities) {
+      this.move({ dt, player, entity });
     }
-  };
 
-  updateCollisionsOnly = (player) => {
-    if (!this.active) return;
-    if (!player.moving) {
-      if (!player.ridingOn) {
-        this.entities.map((entity) =>
-          this.shouldCheckCollision({ dt: 0, player, entity })
-        );
+    if (!player.moving && !player.ridingOn) {
+      for (const entity of this.entities) {
+        this.shouldCheckCollision({ dt, player, entity });
       }
       this.shouldCheckHazardCollision({ player });
     }
