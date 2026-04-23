@@ -21,10 +21,9 @@ export default class Water extends Object3D {
   };
 
   generate = (clearPositions: number[] = []) => {
-    this.entities.map((val) => {
+    for (const val of this.entities) {
       this.floor.remove(val.mesh);
-      val = null;
-    });
+    }
     this.entities = [];
     this.lilyPadPositions = [];
 
@@ -195,12 +194,14 @@ export default class Water extends Object3D {
     if (!this.active) {
       return;
     }
-    this.entities.map((entity) => this.move({ dt, player, entity }));
+    for (const entity of this.entities) {
+      this.move({ dt, player, entity });
+    }
 
     if (!player.moving && !player.ridingOn) {
-      this.entities.map((entity) =>
-        this.shouldCheckCollision({ dt, player, entity })
-      );
+      for (const entity of this.entities) {
+        this.shouldCheckCollision({ dt, player, entity });
+      }
       this.shouldCheckHazardCollision({ player });
     }
   };
@@ -272,6 +273,18 @@ export default class Water extends Object3D {
     }
 
     return null;
+  };
+
+  updateCollisionsOnly = (player) => {
+    if (!this.active) {
+      return;
+    }
+    if (!player.moving && !player.ridingOn) {
+      for (const entity of this.entities) {
+        this.shouldCheckCollision({ player, entity });
+      }
+      this.shouldCheckHazardCollision({ player });
+    }
   };
 
   shouldCheckCollision = ({ player, entity }) => {

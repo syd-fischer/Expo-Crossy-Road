@@ -7,8 +7,10 @@ import {
   Platform,
   Vibration,
   View,
+  Text,
   useColorScheme,
 } from "react-native";
+import { useLocalSearchParams } from "expo-router";
 
 import GestureRecognizer, { swipeDirections } from "@/components/GestureView";
 import Score from "@/components/ScoreText";
@@ -128,23 +130,16 @@ class Game extends Component {
   };
 
   UNSAFE_componentWillMount() {
-    this.engine = new Engine();
+    this.engine = new Engine(this.props.seed);
     // this.engine.hideShadows = this.hideShadows;
     this.engine.onUpdateScore = (position) => {
-      if (this.state.score < position) {
-        this.setState({ score: position });
-      }
+      if (this.state.score < position) this.setState({ score: position });
     };
-    this.engine.onGameInit = () => {
-      this.setState({ score: 0 });
-    };
-    this.engine._isGameStateEnded = () => {
-      return this.state.gameState !== State.Game.playing;
-    };
+    this.engine.onGameInit = () => this.setState({ score: 0 });
+    this.engine._isGameStateEnded = () => this.state.gameState !== State.Game.playing;
     this.engine.onGameReady = () => this.setState({ ready: true });
     this.engine.onGameEnded = () => {
       this.setState({ gameState: State.Game.gameOver });
-      // this.props.navigation.navigate('GameOver')
     };
     this.engine.setupGame(this.props.character, this.props.learningMode);
     this.engine.init();
@@ -265,6 +260,7 @@ class Game extends Component {
           score={this.state.score}
           gameOver={this.state.gameState === State.Game.gameOver}
         />
+        <Text style={{ position: "absolute", top: 40, right: 20, zIndex: 100, fontWeight: "bold" }}>Seed: {this.engine?.seed}</Text>
         {this.renderGameOver()}
 
         {this.renderHomeScreen()}
@@ -326,6 +322,7 @@ function GameScreen(props) {
       learningMode={learningMode}
       setLearningMode={setLearningMode}
       isDarkMode={scheme === "dark"}
+      seed={seed}
     />
   );
 }

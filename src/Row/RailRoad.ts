@@ -70,38 +70,40 @@ export default class RailRoad extends Object3D {
     this.railRoad.add(light);
   };
 
-  update = (dt, player) => {
-    if (!this.active) {
-      return;
-    }
-    this.drive({ dt, player });
-  };
+
 
   drive = ({ dt, player }) => {
-    const { position, hitByTrain, moving } = player;
     const { train } = this;
     const offset = 22 * 5;
 
+    // Movement — only called from update() once per frame
     train.mesh.position.x += train.speed;
 
     if (train.mesh.position.x > offset && train.speed > 0) {
       train.mesh.position.x = -offset;
       this.startRingingLight();
       AudioManager.playAsync(AudioManager.sounds.train.move["0"]);
-      if (train === hitByTrain) {
-        player.hitByTrain = null;
-      }
+      if (train === player.hitByTrain) player.hitByTrain = null;
     } else if (train.mesh.position.x < -offset && train.speed < 0) {
       train.mesh.position.x = offset;
       this.startRingingLight();
       AudioManager.playAsync(AudioManager.sounds.train.move["0"]);
-      if (train === hitByTrain) {
-        player.hitByTrain = null;
-      }
-    } else if (!moving) {
-      this.trainShouldCheckCollision({ player });
+      if (train === player.hitByTrain) player.hitByTrain = null;
     }
+    // NOTE: collision check removed from here — handled by updateCollisionsOnly
   };
+
+  update = (dt, player) => {
+    if (!this.active) return;
+    this.drive({ dt, player }); // moves train only
+  };
+
+updateCollisionsOnly = (player) => {
+  if (!this.active) return;
+  if (!player.moving) {
+    this.trainShouldCheckCollision({ player });
+  }
+};
 
   trainShouldCheckCollision = ({ player }) => {
     const { train } = this;
@@ -129,11 +131,25 @@ export default class RailRoad extends Object3D {
 
           this.onCollide(train, "feathers", "train");
           return;
+        } else if (
+          player.moving &&
+          Math.abs(player.position.x - Math.round(player.position.x)) > 0.1
+        ) {
+          const right = player.position.x - Math.round(player.position.x) > 0;
+          player.position.x = Math.round(player.position.x) + (right ? 0.52 : -0.52);
+
+          TweenLite.to(player.scale, 0.3, {
+            y: 1.5,
+            x: 0.2,
+          });
+          TweenMax.to(player.rotation, 0.3, {
+            x: Math.random() * Math.PI - Math.PI / 2,
+          });
+
+          this.onCollide(train, "feathers", "train");
+          return;
         } else {
-          ///Run Over Hero. ///TODO: Add a side collide
-          // this._hero.scale.y = 0.2;
-          // this._hero.scale.x = 1.5;
-          // this._hero.rotation.y = (Math.random() * Math.PI) - Math.PI/2;
+          ///Run Over Hero.
           player.position.y = groundLevel;
 
           TweenMax.to(player.scale, 0.3, {
