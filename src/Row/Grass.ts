@@ -99,6 +99,7 @@ export default class Grass extends Object3D {
     }
   };
 
+
   constructor(heroWidth, onCollide) {
     super();
     this.onCollide = onCollide;
