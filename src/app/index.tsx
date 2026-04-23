@@ -130,7 +130,12 @@ class Game extends Component {
   };
 
   UNSAFE_componentWillMount() {
+
+
     this.engine = new Engine(this.props.seed);
+    if (!this.engine) return; // shouldn't happen, but protects the lines below
+    this.engine.gameSpeed = 3;
+
     // this.engine.hideShadows = this.hideShadows;
     this.engine.onUpdateScore = (position) => {
       if (this.state.score < position) this.setState({ score: position });
@@ -313,7 +318,11 @@ const GestureView = ({ onStartGesture, onSwipe, ...props }) => {
 function GameScreen(props) {
   const scheme = useColorScheme();
   const { character, setCharacter, learningMode, setLearningMode } = React.useContext(GameContext);
+React.useContext(GameContext);
 
+  // ✅ Add this:
+  const { seed } = useLocalSearchParams<{ seed: string }>();
+  
   return (
     <Game
       {...props}

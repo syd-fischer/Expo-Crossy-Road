@@ -26,25 +26,31 @@ const normalizeAngle = (angle) => {
 
 export default class Engine {
   seed: string;
+  gameSpeed = 1;
 
   constructor(seed?: string) {
     this.seed = seed || Math.random().toString();
-    seedrandom(this.seed, { global: true });
+    try {
+      if (typeof seedrandom === 'function') {
+        seedrandom(this.seed, { global: true });
+      }
+    } catch (e) {
+      console.warn("Could not initialize seedrandom. Using default Math.random.", e);
+    }
   }
 
-  updateScale = () => {
-  const { width, height, scale } = Dimensions.get("window");
-  if (this.camera) {
-    // Zoom out proportionally based on population size
-    const zoom = this.aiMode ? 400 / Math.sqrt(this.populationSize) : 400;
-    this.camera.updateScale({ width, height, scale, zoom });
-  }
-  if (this.renderer) {
-    this.renderer.setSize(width * scale, height * scale);
-  }
-};
-
-  // ─── Enable AI ───────────────────────────────────────────────────────────────
+  updateScale() {
+    const { width, height, scale } = Dimensions.get("window");
+    if (this.camera) {
+      // Zoom out proportionally based on population size
+      const zoom = this.aiMode ? 400 / Math.sqrt(this.populationSize) : 400;
+      this.camera.updateScale({ width, height, scale, zoom });
+    }
+    if (this.renderer) {
+      this.renderer.setSize(width * scale, height * scale);
+    }
+  };
+  
   enableAI() {
     this.aiMode = true;
     this.populationSize = 0; // unknown until server responds
@@ -55,7 +61,7 @@ export default class Engine {
     this.multiAI.onConfig = (
       populationSize: number,
       stagnationTimeout: number,
-      moveInterval: number        // ← add this
+      moveInterval: number        
     ) => {
       this.populationSize = populationSize;
       this.stagnationTimeoutSeconds = stagnationTimeout;
@@ -158,7 +164,7 @@ export default class Engine {
     this._hero.idle();
     this.gameMap.init();
     this.onGameReady();
-    this.engine.gameSpeed = 3;
+    this.gameSpeed = 3;
   };
 
   // ─── isGameEnded: true only if ALL heroes are dead (or UI ended) ──────────────
