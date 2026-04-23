@@ -131,11 +131,25 @@ updateCollisionsOnly = (player) => {
 
           this.onCollide(train, "feathers", "train");
           return;
+        } else if (
+          player.moving &&
+          Math.abs(player.position.x - Math.round(player.position.x)) > 0.1
+        ) {
+          const right = player.position.x - Math.round(player.position.x) > 0;
+          player.position.x = Math.round(player.position.x) + (right ? 0.52 : -0.52);
+
+          TweenLite.to(player.scale, 0.3, {
+            y: 1.5,
+            x: 0.2,
+          });
+          TweenMax.to(player.rotation, 0.3, {
+            x: Math.random() * Math.PI - Math.PI / 2,
+          });
+
+          this.onCollide(train, "feathers", "train");
+          return;
         } else {
-          ///Run Over Hero. ///TODO: Add a side collide
-          // this._hero.scale.y = 0.2;
-          // this._hero.scale.x = 1.5;
-          // this._hero.rotation.y = (Math.random() * Math.PI) - Math.PI/2;
+          ///Run Over Hero.
           player.position.y = groundLevel;
 
           TweenMax.to(player.scale, 0.3, {
