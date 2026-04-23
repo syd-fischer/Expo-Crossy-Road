@@ -1,4 +1,5 @@
 import { Dimensions } from "react-native";
+import seedrandom from "seedrandom";
 
 import { swipeDirections } from "@/components/GestureView";
 import AudioManager from "./AudioManager";
@@ -24,6 +25,13 @@ const normalizeAngle = (angle) => {
 };
 
 export default class Engine {
+  seed: string;
+
+  constructor(seed?: string) {
+    this.seed = seed || Math.random().toString();
+    seedrandom(this.seed, { global: true });
+  }
+
   updateScale = () => {
     const { width, height, scale } = Dimensions.get("window");
     if (this.camera) {

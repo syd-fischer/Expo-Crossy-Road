@@ -7,8 +7,10 @@ import {
   Platform,
   Vibration,
   View,
+  Text,
   useColorScheme,
 } from "react-native";
+import { useLocalSearchParams } from "expo-router";
 
 import GestureRecognizer, { swipeDirections } from "@/components/GestureView";
 import Score from "@/components/ScoreText";
@@ -125,7 +127,7 @@ class Game extends Component {
   };
 
   UNSAFE_componentWillMount() {
-    this.engine = new Engine();
+    this.engine = new Engine(this.props.seed);
     // this.engine.hideShadows = this.hideShadows;
     this.engine.onUpdateScore = (position) => {
       if (this.state.score < position) {
@@ -260,6 +262,7 @@ class Game extends Component {
           score={this.state.score}
           gameOver={this.state.gameState === State.Game.gameOver}
         />
+        <Text style={{ position: "absolute", top: 40, right: 20, zIndex: 100, fontWeight: "bold" }}>Seed: {this.engine?.seed}</Text>
         {this.renderGameOver()}
 
         {this.renderHomeScreen()}
@@ -312,6 +315,9 @@ const GestureView = ({ onStartGesture, onSwipe, ...props }) => {
 function GameScreen(props) {
   const scheme = useColorScheme();
   const { character, setCharacter } = React.useContext(GameContext);
+  const params = useLocalSearchParams();
+  const seedParam = params.seed;
+  const seed = Array.isArray(seedParam) ? seedParam[0] : seedParam;
 
   return (
     <Game
@@ -319,6 +325,7 @@ function GameScreen(props) {
       character={character}
       setCharacter={setCharacter}
       isDarkMode={scheme === "dark"}
+      seed={seed}
     />
   );
 }

@@ -1,0 +1,67 @@
+
+> bouncy-bacon@0.0.0 start
+> expo
+
+Starting project at /app
+Using src/app as the root directory for Expo Router.
+Starting Metro Bundler
+Waiting on http://localhost:8081
+Logs for your project will appear below.
+Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web node_modules/expo-router/entry.js ▓▓▓▓░░░░░░░░░░░░ 29.8% ( 96/186)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓░░░░░░░░░░░ 31.4% (218/389)
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓░░░░░░░░ 54.1% (318/465)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓░░░░░░ 67.9% (486/590)
+ WARN  The package /app/node_modules/three contains an invalid package.json configuration. Consider raising this issue with the package maintainer(s).
+Reason: The resolution for "/app/node_modules/three/examples/jsm/loaders/OBJLoader" defined in "exports" is /app/node_modules/three/examples/jsm/loaders/OBJLoader, however this file does not exist. Falling back to file-based resolution.
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓░░░░░ 72.1% (557/656)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 89.6% (723/764)
+ WARN  The package /app/node_modules/three contains an invalid package.json configuration. Consider raising this issue with the package maintainer(s).
+Reason: The resolution for "/app/node_modules/three/examples/jsm/loaders/ColladaLoader" defined in "exports" is /app/node_modules/three/examples/jsm/loaders/ColladaLoader, however this file does not exist. Falling back to file-based resolution.
+ WARN  The package /app/node_modules/three contains an invalid package.json configuration. Consider raising this issue with the package maintainer(s).
+Reason: The resolution for "/app/node_modules/three/examples/jsm/loaders/GLTFLoader" defined in "exports" is /app/node_modules/three/examples/jsm/loaders/GLTFLoader, however this file does not exist. Falling back to file-based resolution.
+ WARN  The package /app/node_modules/three contains an invalid package.json configuration. Consider raising this issue with the package maintainer(s).
+Reason: The resolution for "/app/node_modules/three/examples/jsm/loaders/MTLLoader" defined in "exports" is /app/node_modules/three/examples/jsm/loaders/MTLLoader, however this file does not exist. Falling back to file-based resolution.
+ WARN  The package /app/node_modules/three contains an invalid package.json configuration. Consider raising this issue with the package maintainer(s).
+Reason: The resolution for "/app/node_modules/three/examples/jsm/loaders/OBJLoader" defined in "exports" is /app/node_modules/three/examples/jsm/loaders/OBJLoader, however this file does not exist. Falling back to file-based resolution.
+ WARN  The package /app/node_modules/three contains an invalid package.json configuration. Consider raising this issue with the package maintainer(s).
+Reason: The resolution for "/app/node_modules/three/examples/jsm/loaders/ColladaLoader" defined in "exports" is /app/node_modules/three/examples/jsm/loaders/ColladaLoader, however this file does not exist. Falling back to file-based resolution.
+ WARN  The package /app/node_modules/three contains an invalid package.json configuration. Consider raising this issue with the package maintainer(s).
+Reason: The resolution for "/app/node_modules/three/examples/jsm/loaders/MTLLoader" defined in "exports" is /app/node_modules/three/examples/jsm/loaders/MTLLoader, however this file does not exist. Falling back to file-based resolution.
+ WARN  The package /app/node_modules/three contains an invalid package.json configuration. Consider raising this issue with the package maintainer(s).
+Reason: The resolution for "/app/node_modules/three/examples/jsm/loaders/OBJLoader" defined in "exports" is /app/node_modules/three/examples/jsm/loaders/OBJLoader, however this file does not exist. Falling back to file-based resolution.
+ WARN  The package /app/node_modules/three contains an invalid package.json configuration. Consider raising this issue with the package maintainer(s).
+Reason: The resolution for "/app/node_modules/three/examples/jsm/loaders/OBJLoader" defined in "exports" is /app/node_modules/three/examples/jsm/loaders/OBJLoader, however this file does not exist. Falling back to file-based resolution.
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 83.2% (762/837)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 97.8% (882/892)
+ WARN  The package /app/node_modules/three contains an invalid package.json configuration. Consider raising this issue with the package maintainer(s).
+Reason: The resolution for "/app/node_modules/three/examples/jsm/loaders/ColladaLoader" defined in "exports" is /app/node_modules/three/examples/jsm/loaders/ColladaLoader, however this file does not exist. Falling back to file-based resolution.
+ WARN  The package /app/node_modules/three contains an invalid package.json configuration. Consider raising this issue with the package maintainer(s).
+Reason: The resolution for "/app/node_modules/three/examples/jsm/loaders/GLTFLoader" defined in "exports" is /app/node_modules/three/examples/jsm/loaders/GLTFLoader, however this file does not exist. Falling back to file-based resolution.
+ WARN  The package /app/node_modules/three contains an invalid package.json configuration. Consider raising this issue with the package maintainer(s).
+Reason: The resolution for "/app/node_modules/three/examples/jsm/loaders/MTLLoader" defined in "exports" is /app/node_modules/three/examples/jsm/loaders/MTLLoader, however this file does not exist. Falling back to file-based resolution.
+ WARN  The package /app/node_modules/three contains an invalid package.json configuration. Consider raising this issue with the package maintainer(s).
+Reason: The resolution for "/app/node_modules/three/examples/jsm/loaders/OBJLoader" defined in "exports" is /app/node_modules/three/examples/jsm/loaders/OBJLoader, however this file does not exist. Falling back to file-based resolution.
+ WARN  The package /app/node_modules/three contains an invalid package.json configuration. Consider raising this issue with the package maintainer(s).
+Reason: The resolution for "/app/node_modules/three/examples/jsm/loaders/ColladaLoader" defined in "exports" is /app/node_modules/three/examples/jsm/loaders/ColladaLoader, however this file does not exist. Falling back to file-based resolution.
+ WARN  The package /app/node_modules/three contains an invalid package.json configuration. Consider raising this issue with the package maintainer(s).
+Reason: The resolution for "/app/node_modules/three/examples/jsm/loaders/MTLLoader" defined in "exports" is /app/node_modules/three/examples/jsm/loaders/MTLLoader, however this file does not exist. Falling back to file-based resolution.
+ WARN  The package /app/node_modules/three contains an invalid package.json configuration. Consider raising this issue with the package maintainer(s).
+Reason: The resolution for "/app/node_modules/three/examples/jsm/loaders/OBJLoader" defined in "exports" is /app/node_modules/three/examples/jsm/loaders/OBJLoader, however this file does not exist. Falling back to file-based resolution.
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 96.4% (912/929)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 98.9% (895/900)
+Web Bundled 21036ms node_modules/expo-router/entry.js (984 modules)
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (984/984)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.1% (919/925)
+λ Bundled 21386ms node_modules/expo-router/node/render.js (926 modules)
+"shadow*" style props are deprecated. Use "boxShadow".
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓░░░░░░░░░░ 43.4% (270/410)
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓░░░░░░ 66.3% (632/779)
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 95.1% (906/929)
+Web Bundled 11303ms node_modules/expo-router/entry.js (986 modules)
+Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundled 77ms node_modules/expo-router/node/render.js (1 module)
+"shadow*" style props are deprecated. Use "boxShadow".
+Web Bundled 656ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 69ms node_modules/expo-router/entry.js (1 module)
+ LOG  [web] Logs will appear in the browser console
