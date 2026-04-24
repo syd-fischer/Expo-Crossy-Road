@@ -77,10 +77,10 @@ export class MultiAIClient {
     });
   }
 
-  sendGenerationOver(scores: number[], ticksAlive: number[]) {
+  sendGenerationOver(scores: number[], ticksAlive: number[], seed: string) {
     if (!this.connected) return;
     const fitnesses = scores.map((s, i) => s * 10 + ticksAlive[i] * 0.01);
-    this.ws.send(JSON.stringify({ type: 'generation_over', fitnesses }));
+    this.ws.send(JSON.stringify({ type: 'generation_over', fitnesses, seed }));
   }
 
   resizePendingActions(size: number) {

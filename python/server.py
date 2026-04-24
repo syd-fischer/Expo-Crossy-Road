@@ -4,8 +4,11 @@ import websockets
 import neat
 import os
 import visualize  # neat-python helper for graphviz diagrams
+import pickle
 
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), 'neat_config.txt')
+RUNS_DIR = os.path.join(os.path.dirname(__file__), 'runs')
+os.makedirs(RUNS_DIR, exist_ok=True)
 
 class NEATServer:
     def __init__(self):
@@ -173,6 +176,23 @@ async def handler(websocket):
                 if i < len(server.genomes):
                     server.genomes[i].fitness = fitness
                 print(f"  Genome {i} fitness: {fitness:.2f}")
+
+            # Save the generation data
+            seed = msg.get('seed', 'unknown_seed')
+            generation = server.population.generation
+            dump_data = {
+                'seed': seed,
+                'generation': generation,
+                'genomes': server.genomes
+            }
+            dump_file = os.path.join(RUNS_DIR, f'gen_{generation}.pkl')
+            try:
+                with open(dump_file, 'wb') as f:
+                    pickle.dump(dump_data, f)
+                print(f"Saved generation {generation} data to {dump_file}")
+            except Exception as e:
+                print(f"Failed to save generation data: {e}")
+
             server.evolve()
             await websocket.send(json.dumps({
                 'type': 'ready',
