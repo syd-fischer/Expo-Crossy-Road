@@ -9,6 +9,7 @@ import {
   View,
   Text,
   useColorScheme,
+  TouchableOpacity,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 
@@ -243,6 +244,60 @@ class Game extends Component {
     );
   }
 
+  renderCameraControls = () => {
+    if (!this.engine || !this.engine.aiMode || this.state.gameState !== State.Game.playing) {
+      return null;
+    }
+
+    const setCameraMode = (mode: 'all' | 'lead' | number) => {
+      this.engine.cameraMode = mode;
+      // Force update to re-render buttons if needed (though mode is on engine)
+      this.forceUpdate();
+    };
+
+    const nextPlayer = () => {
+      let currentIndex = typeof this.engine.cameraMode === 'number' ? this.engine.cameraMode : -1;
+      const heroes = this.engine._heroes || [];
+      const len = heroes.length;
+
+      if (len === 0) return;
+
+      // Find next alive player
+      for (let i = 1; i <= len; i++) {
+        const checkIndex = (currentIndex + i) % len;
+        if (heroes[checkIndex] && heroes[checkIndex].isAlive) {
+          setCameraMode(checkIndex);
+          break;
+        }
+      }
+    };
+
+    return (
+      <View style={{ position: 'absolute', bottom: 40, right: 20, zIndex: 100, flexDirection: 'row', gap: 10 }}>
+        <TouchableOpacity
+          onPress={() => setCameraMode('all')}
+          style={{ backgroundColor: this.engine.cameraMode === 'all' ? '#000' : '#fff', padding: 10, borderRadius: 5 }}
+        >
+          <Text style={{ color: this.engine.cameraMode === 'all' ? '#fff' : '#000' }}>All</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => setCameraMode('lead')}
+          style={{ backgroundColor: this.engine.cameraMode === 'lead' ? '#000' : '#fff', padding: 10, borderRadius: 5 }}
+        >
+          <Text style={{ color: this.engine.cameraMode === 'lead' ? '#fff' : '#000' }}>Lead</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={nextPlayer}
+          style={{ backgroundColor: typeof this.engine.cameraMode === 'number' ? '#000' : '#fff', padding: 10, borderRadius: 5 }}
+        >
+          <Text style={{ color: typeof this.engine.cameraMode === 'number' ? '#fff' : '#000' }}>Next Player</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
   render() {
     const { isDarkMode, isPaused } = this.props;
 
@@ -276,6 +331,8 @@ class Game extends Component {
         {this.state.showSettings && this.renderSettingsScreen()}
 
         {this.state.showCharacterSelect && this.renderCharacterSelectScreen()}
+
+        {this.renderCameraControls()}
 
         {isPaused && (
           <View
