@@ -27,6 +27,8 @@ const normalizeAngle = (angle) => {
 export default class Engine {
   seed: string;
   gameSpeed = 1;
+  cameraMode: 'all' | 'lead' | number = 'all';
+  currentZoom: number = 400;
 
   constructor(seed?: string) {
     this.seed = seed || Math.random().toString();
@@ -42,14 +44,17 @@ export default class Engine {
   updateScale() {
     const { width, height, scale } = Dimensions.get("window");
     if (this.camera) {
-      // Zoom out proportionally based on population size
-      const zoom = this.aiMode ? 400 / Math.sqrt(this.populationSize) : 400;
-      this.camera.updateScale({ width, height, scale, zoom });
+      this.camera.updateScale({ width, height, scale, zoom: this.currentZoom });
     }
     if (this.renderer) {
       this.renderer.setSize(width * scale, height * scale);
     }
   };
+
+  setZoom(zoom: number) {
+    this.currentZoom = zoom;
+    this.updateScale();
+  }
   
   enableAI() {
     this.aiMode = true;
@@ -208,20 +213,89 @@ export default class Engine {
 
   // ─── Camera / map scroll ─────────────────────────────────────────────────────
   forwardScene = () => {
-    // Follow the furthest-ahead living hero
-    const leadHero = this.aiMode
-      ? this._heroes
-          .filter((h) => h.isAlive)
-          .sort((a, b) => b.position.z - a.position.z)[0] ?? this._heroes[0]
-      : this._hero;
+    let targetZ = 0;
+    let targetX = 0;
+    let targetZoom = 400;
 
-    this.scene.world.position.z -=
-      (leadHero.position.z - startingRow + this.scene.world.position.z) *
-      CAMERA_EASING;
+    const livingHeroes = this.aiMode
+      ? this._heroes.filter((h) => h.isAlive)
+      : [this._hero].filter((h) => h?.isAlive);
 
-    const targetCameraX = Math.max(-3, Math.min(2, -leadHero.position.x));
-    this.scene.world.position.x +=
-      (targetCameraX - this.scene.world.position.x) * CAMERA_EASING;
+    if (livingHeroes.length === 0) {
+      // Keep current
+      targetZ = this.scene.world.position.z;
+      targetX = this.scene.world.position.x;
+      targetZoom = this.currentZoom;
+    } else if (this.aiMode && this.cameraMode === 'all') {
+      let minZ = Infinity;
+      let maxZ = -Infinity;
+      let minX = Infinity;
+      let maxX = -Infinity;
+
+      livingHeroes.forEach((h) => {
+        if (h.position.z < minZ) minZ = h.position.z;
+        if (h.position.z > maxZ) maxZ = h.position.z;
+        if (h.position.x < minX) minX = h.position.x;
+        if (h.position.x > maxX) maxX = h.position.x;
+      });
+
+      const centerX = (minX + maxX) / 2;
+      const centerZ = (minZ + maxZ) / 2;
+
+      targetZ = -(centerZ - startingRow);
+      // Removed constraints for all mode to center
+      targetX = -centerX;
+
+      // Calculate required zoom
+      const spreadZ = maxZ - minZ;
+      const spreadX = maxX - minX;
+
+      const baseZoom = 400; // Original zoom
+
+      // We want to zoom out enough to fit both X and Z spreads.
+      // E.g. screen height might correspond to roughly ~10 units. Screen width roughly ~15 units at base zoom.
+      // We scale zoom inversely with spread.
+      const padding = 2; // Extra units of padding
+
+      const { width, height } = Dimensions.get("window");
+      const aspect = width / height;
+
+      // Magic numbers based on the orthographic camera setup
+      const visibleZAtBase = 15;
+      const visibleXAtBase = 15 * aspect;
+
+      const reqZoomZ = baseZoom / Math.max(1, (spreadZ + padding) / visibleZAtBase);
+      const reqZoomX = baseZoom / Math.max(1, (spreadX + padding) / visibleXAtBase);
+
+      targetZoom = Math.min(reqZoomX, reqZoomZ, baseZoom);
+
+    } else {
+      let targetHero = livingHeroes[0];
+
+      if (this.aiMode && this.cameraMode === 'lead') {
+        targetHero = [...livingHeroes].sort((a, b) => b.position.z - a.position.z)[0];
+      } else if (this.aiMode && typeof this.cameraMode === 'number') {
+        targetHero = this._heroes[this.cameraMode];
+        if (!targetHero || !targetHero.isAlive) {
+            // Fallback to lead if the selected hero is dead or invalid
+            targetHero = [...livingHeroes].sort((a, b) => b.position.z - a.position.z)[0];
+            this.cameraMode = 'lead';
+        }
+      }
+
+      targetZ = -(targetHero.position.z - startingRow);
+      targetX = Math.max(-3, Math.min(2, -targetHero.position.x));
+      targetZoom = 400; // default zoom for single player tracking
+    }
+
+    // Apply Easing
+    this.scene.world.position.z += (targetZ - this.scene.world.position.z) * CAMERA_EASING;
+    this.scene.world.position.x += (targetX - this.scene.world.position.x) * CAMERA_EASING;
+
+    if (Math.abs(this.currentZoom - targetZoom) > 0.1) {
+        this.currentZoom += (targetZoom - this.currentZoom) * 0.1;
+        this.updateScale();
+    }
 
     if (-this.scene.world.position.z - this.camCount > 1.0) {
       this.camCount = -this.scene.world.position.z;
