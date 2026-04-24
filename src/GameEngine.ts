@@ -322,7 +322,7 @@ export default class Engine {
       this._heroes.every((h) => !h.isAlive)
     ) {
       this._generationEnding = true;
-      this.multiAI?.sendGenerationOver(this._heroScores, this._heroTicksAlive);
+      this.multiAI?.sendGenerationOver(this._heroScores, this._heroTicksAlive, this.seed);
     }
   };
 
