@@ -14,12 +14,12 @@ export class MultiAIClient {
   private ws: WebSocket;
   private connected = false;
   private pendingActions: (string | null)[];
-  moveInterval = 30;
+  moveInterval = 60;
   private ticks: number[];
 
   onReadyForNextGeneration?: () => void;
   onGenomeChange?: (generation: number) => void;
-  onConfig?: (populationSize: number, stagnationTimeout: number, move_interval:number) => void;
+  onConfig?: (populationSize: number, stagnationTimeout: number, move_interval:number, learningMode: boolean) => void;
 
   constructor(public populationSize: number) {
     this.pendingActions = Array(populationSize).fill(null);
@@ -33,7 +33,7 @@ export class MultiAIClient {
     this.ws.onmessage = (event) => {
         const msg = JSON.parse(event.data);
         if (msg.type === 'config') {
-            this.onConfig?.(msg.population_size, msg.stagnation_timeout, msg.move_interval);
+            this.onConfig?.(msg.population_size, msg.stagnation_timeout, msg.move_interval, msg.learning_mode);
         }
         else if (msg.type === 'actions') {
             msg.actions.forEach((action: string, i: number) => {

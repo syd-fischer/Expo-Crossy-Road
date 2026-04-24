@@ -1,7 +1,7 @@
 [NEAT]
 fitness_criterion       = max
 fitness_threshold       = 1000
-pop_size                = 200
+pop_size                = 50
 reset_on_extinction     = False
 no_fitness_termination  = True
 
@@ -62,4 +62,5 @@ species_elitism         = 1
 
 [GameSettings]
 stagnation_timeout = 10
-move_interval = 6
+move_interval = 18
+learning_mode = True

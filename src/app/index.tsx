@@ -146,8 +146,11 @@ class Game extends Component {
     this.engine.onGameEnded = () => {
       this.setState({ gameState: State.Game.gameOver });
     };
-    this.engine.setupGame(this.props.character, this.props.learningMode);
-    this.engine.init();
+     this.engine._currentCharacter = this.props.character;
+
+    // Turn on AI mode (this opens the websocket)
+    this.engine.enableAI();
+
   }
 
   newScore = () => {

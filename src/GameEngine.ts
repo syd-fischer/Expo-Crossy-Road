@@ -61,7 +61,8 @@ export default class Engine {
     this.multiAI.onConfig = (
       populationSize: number,
       stagnationTimeout: number,
-      moveInterval: number        
+      moveInterval: number,
+      learningMode: boolean     
     ) => {
       this.populationSize = populationSize;
       this.stagnationTimeoutSeconds = stagnationTimeout;
@@ -69,7 +70,9 @@ export default class Engine {
       this.multiAI!.moveInterval = moveInterval;        // ← now defined
       this.multiAI!.resizePendingActions(populationSize);
 
-      this.setupGame(this._currentCharacter);
+      this._learningMode = learningMode;
+
+      this.setupGame(this._currentCharacter, this._learningMode);
       this.init();
     };
 

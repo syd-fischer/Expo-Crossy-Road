@@ -41,6 +41,7 @@ class NEATServer:
         self.move_interval = int(
             raw_config.get('GameSettings', 'move_interval', fallback='30')
         )
+        self.learning_mode = raw_config.getboolean('GameSettings', 'learning_mode', fallback=False)
 
         self.dash = None
         # Handle headless environments safely
@@ -146,6 +147,7 @@ async def handler(websocket):
         'population_size': len(server.genomes),
         'stagnation_timeout': server.stagnation_timeout,  # ← server. not self.
         'move_interval': server.move_interval,
+        'learning_mode': server.learning_mode, 
     }))
 
     async for raw in websocket:
@@ -179,7 +181,7 @@ async def handler(websocket):
 
 async def main():
     print("NEAT server running on ws://localhost:8765")
-    async with websockets.serve(handler, 'localhost', 8765):
+    async with websockets.serve(handler, "0.0.0.0", 8765):
         await asyncio.Future()  # run forever
 
 asyncio.run(main())

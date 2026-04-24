@@ -51,6 +51,29 @@ class Dashboard:
         inputs = config.genome_config.input_keys
         outputs = config.genome_config.output_keys
 
+        input_names = {
+            -1: "Hero X",
+            -2: "Hero Z",
+            -3: "Front Dist",
+            -4: "Front Left",
+            -5: "Front Right",
+            -6: "Left Dist",
+            -7: "Right Dist",
+            -8: "Water Ahead",
+            -9: "Road Ahead",
+            -10: "Safe Z",
+            -11: "Car Speed",
+            -12: "Log Speed"
+        }
+        
+        # NEAT uses positive numbers for outputs (0 to 3)
+        output_names = {
+            0: "UP",
+            1: "DOWN",
+            2: "LEFT",
+            3: "RIGHT"
+        }
+
         # Determine hidden nodes
         hidden = [k for k in genome.nodes.keys() if k not in inputs and k not in outputs]
 
@@ -90,12 +113,22 @@ class Dashboard:
         # Draw nodes
         for node_id, pos in positions.items():
             color = (150, 150, 150)
+            
+            # Get the display name if it exists, otherwise use the node_id
             if node_id in inputs:
                 color = (100, 200, 100)
+                display_name = input_names.get(node_id, f"In {node_id}")
             elif node_id in outputs:
                 color = (100, 100, 200)
+                display_name = output_names.get(node_id, f"Out {node_id}")
+            else:
+                display_name = f"H {node_id}" # Hidden node
+
             pygame.draw.circle(self.screen, color, pos, 10)
 
             # Label
-            label = self.font.render(str(node_id), True, (255, 255, 255))
-            self.screen.blit(label, (int(pos[0]) - 10, int(pos[1]) - 25))
+            label = self.font.render(display_name, True, (255, 255, 255))
+            
+            # Center the label above the node for better readability
+            label_rect = label.get_rect(center=(int(pos[0]), int(pos[1]) - 20))
+            self.screen.blit(label, label_rect)
